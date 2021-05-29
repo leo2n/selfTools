@@ -17,7 +17,7 @@ func newSHA256(origin string) []byte {
 	return hash[:]
 }
 
-// output base64 format
+// input: msg string, output: base64([]byte)
 func Encrypt(msg string) string {
 	log.Println("keyString is:", keyString)
 
@@ -48,7 +48,7 @@ func Encrypt(msg string) string {
 	return base64.URLEncoding.EncodeToString(cipherText)
 }
 
-// 解密: []byte -> string
+// 解密: base64([]byte) -> string
 func Decrypt(encryptedString string) string {
 	//Create a new Cipher Block from the key
 	block, err := aes.NewCipher(keyString)
