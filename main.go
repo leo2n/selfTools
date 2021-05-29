@@ -11,6 +11,6 @@ func main() {
 	s, _ := encdec.EncryptToBytes("Hello World", textPasswd)
 
 	log.Println(s, "\n", string(s))
-	ss, _ := encdec.DecryptToBytes(s, textPasswd)
+	ss, _ := encdec.DecryptFromBytes(s, textPasswd)
 	log.Println(string(ss))
 }

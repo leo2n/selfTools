@@ -5,6 +5,7 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"crypto/sha256"
+	"encoding/base64"
 	"io"
 	"log"
 )
@@ -16,6 +17,26 @@ func newKeyBytes(textPasswd string) []byte {
 }
 
 //
+func EncryptToBase64(msg string, textPasswd string) (string, error) {
+	encryptedBytes, err := EncryptToBytes(msg, textPasswd)
+	if err != nil {
+		return "", err
+	}
+	return base64.URLEncoding.EncodeToString(encryptedBytes), nil
+}
+
+//
+func DecryptFromBase64(encryptedBase64 string, textPasswd string) (string, error) {
+	nullResult := ""
+	encryptedBytes, err := base64.URLEncoding.DecodeString(encryptedBase64)
+	if err != nil {
+		return nullResult, err
+	}
+	result, err := DecryptFromBytes(encryptedBytes, textPasswd)
+	return string(result), err
+}
+
+// encrypt msg string to []byte
 func EncryptToBytes(msg string, textPasswd string) ([]byte, error) {
 	nullResult := []byte{}
 	keyBytes := newKeyBytes(textPasswd)
@@ -46,7 +67,7 @@ func EncryptToBytes(msg string, textPasswd string) ([]byte, error) {
 }
 
 // 解密一个[]byte, 解密后的结果也是[]byte
-func DecryptToBytes(encryptedBytes []byte, textPasswd string) ([]byte, error) {
+func DecryptFromBytes(encryptedBytes []byte, textPasswd string) ([]byte, error) {
 	keyBytes := newKeyBytes(textPasswd)
 	nullResult := []byte{}
 	//Create a new Cipher Block from the key
