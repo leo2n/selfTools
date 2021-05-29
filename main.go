@@ -1,11 +1,13 @@
 package main
 
 import (
-	"github.com/leo2n/selfTools/encdec"
 	"log"
+
+	"github.com/leo2n/selfTools/encdec"
+	"github.com/leo2n/selfTools/randLen"
 )
 
 func main() {
-	log.Println("Hello Log")
 	log.Println(encdec.Encrypt("Hello World"))
+	log.Println(randLen.RandLenStringGenerator(8))
 }
