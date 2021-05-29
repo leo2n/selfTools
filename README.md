@@ -1,2 +1,6 @@
 # selfTools
-some go tools writed for fun😁
+
+usage:
+```bash
+go get -u github.com/leo2n/selfTools
+```
