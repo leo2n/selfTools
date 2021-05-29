@@ -49,7 +49,7 @@ func Encrypt(msg string) string {
 }
 
 // 解密: base64([]byte) -> string
-func Decrypt(encryptedString string) string {
+func Decrypt(encryptedString string) (string, error) {
 	//Create a new Cipher Block from the key
 	block, err := aes.NewCipher(keyString)
 	if err != nil {
@@ -74,9 +74,5 @@ func Decrypt(encryptedString string) string {
 
 	//Decrypt the data
 	plaintext, err := aesGCM.Open(nil, nonce, cipherText, nil)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	return fmt.Sprintf("%s", plaintext)
+	return fmt.Sprintf("%s", plaintext), err
 }
