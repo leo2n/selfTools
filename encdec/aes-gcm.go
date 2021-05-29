@@ -5,53 +5,52 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"crypto/sha256"
-	"encoding/base64"
-	"fmt"
 	"io"
 	"log"
 )
 
-// Generate 32 byte sha256sum
-func newSHA256(origin string) []byte {
-	hash := sha256.Sum256([]byte(origin))
+// convert text password to sha256sum bytes
+func newKeyBytes(textPasswd string) []byte {
+	hash := sha256.Sum256([]byte(textPasswd))
 	return hash[:]
 }
 
-// input: msg string, output: base64([]byte)
-func Encrypt(msg string) string {
-	log.Println("keyString is:", keyString)
-
+//
+func EncryptToBytes(msg string, textPasswd string) ([]byte, error) {
+	nullResult := []byte{}
+	keyBytes := newKeyBytes(textPasswd)
 	//Create a new Cipher Block from the key
-	block, err := aes.NewCipher(keyString)
+	block, err := aes.NewCipher(keyBytes)
 	if err != nil {
-		panic(err.Error())
+		return nullResult, err
 	}
 
 	//Create a new GCM - https://en.wikipedia.org/wiki/Galois/Counter_Mode
 	//https://golang.org/pkg/crypto/cipher/#NewGCM
 	aesGCM, err := cipher.NewGCM(block)
 	if err != nil {
-		panic(err.Error())
+		return nullResult, err
 	}
 
 	//Create a nonce. Nonce should be from GCM
 	nonce := make([]byte, aesGCM.NonceSize())
 	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
-		panic(err.Error())
+		return nullResult, err
 	}
-	log.Println("nonce is: ", nonce)
 
 	//Encrypt the data using aesGCM.Seal
 	//Since we don't want to save the nonce somewhere else in this case, we add it as a prefix to the encrypted data. The first nonce argument in Seal is the prefix.
 	cipherText := aesGCM.Seal(nonce, nonce, []byte(msg), nil)
 	//fmt.Println("cipherText: ", cipherText, "  ", hex.EncodeToString(cipherText))
-	return base64.URLEncoding.EncodeToString(cipherText)
+	return cipherText, nil
 }
 
-// 解密: base64([]byte) -> string
-func Decrypt(encryptedString string) (string, error) {
+// 解密一个[]byte, 解密后的结果也是[]byte
+func DecryptToBytes(encryptedBytes []byte, textPasswd string) ([]byte, error) {
+	keyBytes := newKeyBytes(textPasswd)
+	nullResult := []byte{}
 	//Create a new Cipher Block from the key
-	block, err := aes.NewCipher(keyString)
+	block, err := aes.NewCipher(keyBytes)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -59,20 +58,19 @@ func Decrypt(encryptedString string) (string, error) {
 	//Create a new GCM
 	aesGCM, err := cipher.NewGCM(block)
 	if err != nil {
-		panic(err.Error())
+		return nullResult, err
 	}
 
 	//Get the nonce size
 	nonceSize := aesGCM.NonceSize()
-
-	encrypted, err := base64.URLEncoding.DecodeString(encryptedString)
-	if err != nil {
-		log.Fatalln("base64 decoding failed")
-	}
 	//Extract the nonce from the encrypted data
-	nonce, cipherText := encrypted[:nonceSize], encrypted[nonceSize:]
+	nonce, cipherText := encryptedBytes[:nonceSize], encryptedBytes[nonceSize:]
 
 	//Decrypt the data
 	plaintext, err := aesGCM.Open(nil, nonce, cipherText, nil)
-	return fmt.Sprintf("%s", plaintext), err
+	if err != nil {
+		log.Println(err)
+		return nullResult, err
+	}
+	return plaintext, nil
 }
