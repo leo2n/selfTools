@@ -6,6 +6,7 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
+	"fmt"
 	"io"
 	"log"
 )
@@ -33,7 +34,7 @@ func DecryptFromBase64(encryptedBase64 string, textPasswd string) (string, error
 		return nullResult, err
 	}
 	result, err := DecryptFromBytes(encryptedBytes, textPasswd)
-	return string(result), err
+	return fmt.Sprintf("%s", result), err
 }
 
 // encrypt msg string to []byte
