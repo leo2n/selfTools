@@ -1,4 +1,4 @@
-module github.com/leo2n/selfTools
+module github.com/rogerBridge/selfTools
 
 go 1.16
 

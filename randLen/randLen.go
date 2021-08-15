@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 func RandLenStringGenerator(n int) string {
 	rand.Seed(time.Now().UnixNano())

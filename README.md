@@ -2,5 +2,5 @@
 
 usage:
 ```bash
-go get -u github.com/leo2n/selfTools
+go get -u github.com/rogerBridge/selfTools
 ```
